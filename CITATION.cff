@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Si usas este código o el algoritmo EB, por favor cítalo así."
+title: "EB: un clasificador cuántico a nivel de clase mediante agregación de fidelidades"
+authors:
+  - family-names: "Bielza Poza"
+    given-names: "Jaime"
+type: software
+license: MIT
+year: 2026
+keywords:
+  - quantum machine learning
+  - quantum classification
+  - fidelity
+  - class-level representations
+  - quantum prototypes
+  - QSVC
+references:
+  - type: thesis
+    title: "Representaciones cuánticas a nivel de clase mediante agregación de fidelidades: el algoritmo EB"
+    authors:
+      - family-names: "Bielza Poza"
+        given-names: "Jaime"
+    institution:
+      name: "Escuela Politécnica Superior, Universidad Autónoma de Madrid"
+    thesis-type: "Trabajo Fin de Máster (TFM)"
+    year: 2026

@@ -1,0 +1,11 @@
+# Versiones validadas (Windows, Python 3.13) con las que se desarrolló y
+# verificó el trabajo. Otras versiones recientes pueden funcionar, pero la API
+# de Qiskit 2.x y qiskit-machine-learning 0.9 es sensible a cambios de versión.
+qiskit==2.2.1
+qiskit-machine-learning==0.9.0
+qiskit-aer==0.17.2          # opcional; el método usa statevectors exactos
+scikit-learn==1.7.1
+numpy==2.2.6
+pandas==2.2.3
+scipy==1.16.1
+matplotlib==3.10.5

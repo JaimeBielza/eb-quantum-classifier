@@ -1,0 +1,226 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1680" y2="1020" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7F1DF"/>
+      <stop offset="1" stop-color="#E8F2EE"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#FFFDF8"/>
+      <stop offset="1" stop-color="#F7F5EE"/>
+    </linearGradient>
+    <linearGradient id="accentSoft" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#CDE6DC"/>
+      <stop offset="1" stop-color="#F0E6C9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#1C2B24" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1D5A4E"/>
+    </marker>
+    <style>
+      .title { font: 700 40px Georgia, 'Times New Roman', serif; fill: #15211D; }
+      .subtitle { font: 400 18px Georgia, 'Times New Roman', serif; fill: #53615B; }
+      .section { font: 700 22px Georgia, 'Times New Roman', serif; fill: #18322A; }
+      .body { font: 400 17px Georgia, 'Times New Roman', serif; fill: #24302C; }
+      .label { font: 700 15px Georgia, 'Times New Roman', serif; fill: #1D5A4E; letter-spacing: 1px; }
+      .mono { font: 600 15px 'Courier New', monospace; fill: #36534A; }
+      .small { font: 400 14px Georgia, 'Times New Roman', serif; fill: #5B6963; }
+      .box { fill: url(#panel); stroke: #D8D0C2; stroke-width: 2; rx: 24; }
+      .inner { fill: white; stroke: #D7DDD8; stroke-width: 1.5; rx: 18; }
+      .chip { fill: #EEF4EF; stroke: #C8D5CF; stroke-width: 1.5; rx: 12; }
+      .accentChip { fill: #EEF5F1; stroke: #A9C4B8; stroke-width: 1.5; rx: 12; }
+      .warnChip { fill: #F8F1DE; stroke: #D8C79A; stroke-width: 1.5; rx: 12; }
+      .line { stroke: #1D5A4E; stroke-width: 4; stroke-linecap: round; }
+      .wire { stroke: #5E7069; stroke-width: 2.5; stroke-linecap: round; }
+      .gate { fill: #F4FBF7; stroke: #7BA494; stroke-width: 2; rx: 10; }
+      .gateAlt { fill: #FFF8E6; stroke: #CBAE63; stroke-width: 2; rx: 10; }
+      .brace { stroke: #B0B8B3; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1800" height="1100" fill="url(#bg)"/>
+  <circle cx="1480" cy="170" r="240" fill="#F4EBCF" fill-opacity="0.55"/>
+  <circle cx="280" cy="960" r="230" fill="#DCEDE4" fill-opacity="0.72"/>
+
+  <text x="120" y="105" class="title">Visión general del algoritmo EB</text>
+  <text x="120" y="138" class="subtitle">Representaciones cuánticas a nivel de clase mediante pares de representantes, comparación por fidelidad y agregación</text>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="180" width="1040" height="880" rx="30" class="box"/>
+    <rect x="1160" y="180" width="550" height="880" rx="30" class="box"/>
+  </g>
+
+  <text x="130" y="225" class="label">FLUJO DEL ALGORITMO</text>
+  <text x="1198" y="225" class="label">LECTURA COMPARATIVA</text>
+
+  <g>
+    <rect x="130" y="255" width="300" height="180" class="inner"/>
+    <text x="155" y="290" class="section">1. Datos de entrada</text>
+    <text x="155" y="325" class="body">Conjunto binario separado por clase</text>
+    <text x="155" y="350" class="body">x -&gt; estado codificado o cuántico nativo</text>
+    <rect x="155" y="375" width="120" height="34" class="accentChip"/>
+    <text x="178" y="397" class="mono">clase +1</text>
+    <rect x="288" y="375" width="120" height="34" class="warnChip"/>
+    <text x="311" y="397" class="mono">clase -1</text>
+    <circle cx="195" cy="332" r="8" fill="#1D5A4E"/>
+    <circle cx="225" cy="332" r="8" fill="#A7C3B7"/>
+    <circle cx="255" cy="332" r="8" fill="#D2B974"/>
+  </g>
+
+  <g>
+    <rect x="455" y="255" width="300" height="180" class="inner"/>
+    <text x="480" y="290" class="section">2. Selección de representantes</text>
+    <text x="480" y="325" class="body">n representantes por clase</text>
+    <text x="480" y="350" class="body">aleatorio o basado en k-means</text>
+    <rect x="480" y="373" width="250" height="40" class="chip"/>
+    <text x="500" y="398" class="mono">R^(+) = {r1, r2, ..., rn}</text>
+    <rect x="480" y="420" width="250" height="40" class="chip"/>
+    <text x="500" y="445" class="mono">R^(-) = {s1, s2, ..., sn}</text>
+  </g>
+
+  <g>
+    <rect x="780" y="255" width="310" height="180" class="inner"/>
+    <text x="805" y="290" class="section">3. Construcción de clase</text>
+    <text x="805" y="325" class="body">Estados característicos de clase</text>
+    <text x="805" y="350" class="body">a partir de pares no ordenados</text>
+    <rect x="805" y="375" width="260" height="34" class="accentChip"/>
+    <text x="826" y="397" class="mono">Psi^(+) = U_pair(ri, rj)</text>
+    <rect x="805" y="420" width="260" height="34" class="warnChip"/>
+    <text x="826" y="442" class="mono">Psi^(-) = U_pair(si, sj)</text>
+  </g>
+
+  <path d="M430 345 H450" class="line" marker-end="url(#arrow)"/>
+  <path d="M755 345 H775" class="line" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="130" y="475" width="960" height="250" class="inner"/>
+    <text x="155" y="512" class="section">4. Circuito de pares y lógica de fidelidad</text>
+    <text x="155" y="540" class="body">Una muestra de test se empareja con los representantes y se compara con las estructuras de clase mediante fidelidad.</text>
+
+    <g transform="translate(175,565)">
+      <text x="0" y="-12" class="small">Circuito de pares (esquemático)</text>
+      <line x1="0" y1="20" x2="510" y2="20" class="wire"/>
+      <line x1="0" y1="70" x2="510" y2="70" class="wire"/>
+      <line x1="0" y1="120" x2="510" y2="120" class="wire"/>
+      <line x1="0" y1="170" x2="510" y2="170" class="wire"/>
+
+      <text x="-36" y="25" class="mono">q0</text>
+      <text x="-36" y="75" class="mono">q1</text>
+      <text x="-36" y="125" class="mono">q2</text>
+      <text x="-36" y="175" class="mono">q3</text>
+
+      <rect x="35" y="2" width="72" height="36" class="gate"/>
+      <rect x="35" y="52" width="72" height="36" class="gate"/>
+      <text x="56" y="25" class="mono">RY(x)</text>
+      <text x="56" y="75" class="mono">RY(x)</text>
+
+      <rect x="150" y="102" width="72" height="36" class="gateAlt"/>
+      <rect x="150" y="152" width="72" height="36" class="gateAlt"/>
+      <text x="167" y="125" class="mono">RY(r)</text>
+      <text x="167" y="175" class="mono">RY(r)</text>
+
+      <circle cx="292" cy="20" r="8" fill="#1D5A4E"/>
+      <circle cx="292" cy="120" r="8" fill="#1D5A4E"/>
+      <line x1="292" y1="20" x2="292" y2="120" class="wire"/>
+      <path d="M280 120 H304 M292 108 V132" class="wire"/>
+
+      <circle cx="375" cy="70" r="8" fill="#1D5A4E"/>
+      <circle cx="375" cy="170" r="8" fill="#1D5A4E"/>
+      <line x1="375" y1="70" x2="375" y2="170" class="wire"/>
+      <path d="M363 170 H387 M375 158 V182" class="wire"/>
+
+      <rect x="435" y="52" width="52" height="36" class="gate"/>
+      <rect x="435" y="102" width="52" height="36" class="gateAlt"/>
+      <text x="449" y="75" class="mono">Fid</text>
+      <text x="449" y="125" class="mono">Fid</text>
+    </g>
+
+    <g transform="translate(770,575)">
+      <rect x="0" y="0" width="270" height="120" class="chip"/>
+      <text x="20" y="30" class="section" style="font-size:18px;">Construcción de la puntuación</text>
+      <text x="20" y="58" class="mono">F^(+) (x) = {|&lt;psi_x,r | Psi^(+)ij&gt;|^2}</text>
+      <text x="20" y="82" class="mono">F^(-) (x) = {|&lt;psi_x,s | Psi^(-)ij&gt;|^2}</text>
+      <text x="20" y="106" class="mono">predice y = argmax A(F^(y)(x))</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="130" y="760" width="455" height="255" class="inner"/>
+    <text x="155" y="795" class="section">5. Capa de agregación</text>
+    <text x="155" y="825" class="body">El mismo conjunto de fidelidades genera distintas reglas de decisión.</text>
+
+    <rect x="160" y="855" width="120" height="110" class="accentChip"/>
+    <text x="187" y="888" class="section" style="font-size:18px;">EB-Mean</text>
+    <text x="176" y="918" class="small">evidencia distribuida</text>
+    <text x="172" y="942" class="mono">A(F) = mean(F)</text>
+
+    <rect x="298" y="855" width="120" height="110" class="chip"/>
+    <text x="316" y="888" class="section" style="font-size:18px;">EB-Median</text>
+    <text x="318" y="918" class="small">centro robusto</text>
+    <text x="309" y="942" class="mono">A(F) = median(F)</text>
+
+    <rect x="436" y="855" width="120" height="110" class="warnChip"/>
+    <text x="466" y="888" class="section" style="font-size:18px;">EB-Max</text>
+    <text x="453" y="918" class="small">mejor coincidencia</text>
+    <text x="454" y="942" class="mono">A(F) = max(F)</text>
+  </g>
+
+  <g>
+    <rect x="615" y="760" width="475" height="255" class="inner"/>
+    <text x="640" y="795" class="section">6. Lectura de la salida</text>
+    <text x="640" y="825" class="body">EB compara la muestra con la geometría de la clase, no solo con muestras aisladas.</text>
+
+    <path d="M670 900 C730 850 785 850 845 900" class="brace"/>
+    <path d="M670 900 C730 950 785 950 845 900" class="brace"/>
+    <path d="M860 900 H1025" class="line" marker-end="url(#arrow)"/>
+
+    <circle cx="690" cy="900" r="15" fill="#A6C1B6"/>
+    <circle cx="740" cy="880" r="15" fill="#D9C47D"/>
+    <circle cx="790" cy="915" r="15" fill="#A6C1B6"/>
+    <circle cx="840" cy="890" r="15" fill="#D9C47D"/>
+
+    <rect x="915" y="848" width="135" height="102" class="accentChip"/>
+    <text x="942" y="886" class="section" style="font-size:20px;">Decisión</text>
+    <text x="940" y="918" class="mono">score(+) &gt; score(-)</text>
+    <text x="961" y="944" class="mono">predice +1</text>
+  </g>
+
+  <g>
+    <rect x="1195" y="255" width="480" height="760" class="inner"/>
+    <text x="1220" y="295" class="section">Cómo interpretar el método</text>
+    <text x="1220" y="330" class="body">EB se entiende mejor como una alternativa cuántica</text>
+    <text x="1220" y="355" class="body">a nivel de clase, no como un sustituto universal</text>
+    <text x="1220" y="380" class="body">de cualquier otro clasificador.</text>
+
+    <rect x="1225" y="415" width="130" height="200" class="accentChip"/>
+    <text x="1268" y="452" class="section" style="font-size:20px;">EB</text>
+    <text x="1243" y="490" class="small">nivel de clase</text>
+    <text x="1241" y="514" class="small">pares de</text>
+    <text x="1241" y="535" class="small">representantes</text>
+    <text x="1241" y="566" class="small">agregación por</text>
+    <text x="1241" y="587" class="small">fidelidad</text>
+
+    <rect x="1370" y="415" width="130" height="200" class="chip"/>
+    <text x="1408" y="452" class="section" style="font-size:20px;">CPC</text>
+    <text x="1387" y="490" class="small">misma estructura</text>
+    <text x="1388" y="514" class="small">similitud clásica</text>
+    <text x="1393" y="545" class="small">coseno o RBF</text>
+    <text x="1406" y="587" class="mono">control</text>
+
+    <rect x="1515" y="415" width="130" height="200" class="warnChip"/>
+    <text x="1549" y="452" class="section" style="font-size:20px;">QSVC</text>
+    <text x="1537" y="490" class="small">nivel de instancia</text>
+    <text x="1532" y="514" class="small">kernel de</text>
+    <text x="1532" y="535" class="small">fidelidad</text>
+    <text x="1526" y="566" class="small">vectores soporte</text>
+    <text x="1542" y="600" class="mono">referencia</text>
+
+    <text x="1220" y="685" class="body">La pregunta científica clave no es:</text>
+    <text x="1220" y="722" class="body" style="font-style:italic;">«¿Supera EB a todo lo demás?»</text>
+    <text x="1220" y="772" class="body">sino:</text>
+    <text x="1220" y="809" class="body" style="font-style:italic;">«¿Cuándo aporta información útil la</text>
+    <text x="1220" y="834" class="body" style="font-style:italic;">estructura cuántica a nivel de clase?»</text>
+  </g>
+
+</svg>

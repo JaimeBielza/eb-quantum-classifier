@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EB · Algoritmo interactivo — TFM</title>
+<style>
+  :root{
+    --bg1:#F7F1DF; --bg2:#E8F2EE; --panel:#FFFDF8; --ink:#15211D; --ink2:#24302C;
+    --muted:#5B6963; --accent:#1D5A4E; --accent2:#7BA494; --warn:#C8A24B;
+    --pos:#1D5A4E; --neg:#C07A2B; --posSoft:#CDE6DC; --negSoft:#F3E2C6;
+    --line:#D8D0C2; --chip:#EEF4EF; --shadow:0 18px 40px rgba(28,43,36,.10);
+    --mono:'Courier New',monospace; --serif:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--serif);color:var(--ink2);line-height:1.6;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));background-attachment:fixed}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  header.hero{padding:64px 22px 40px;text-align:center}
+  header.hero h1{font-size:2.5rem;color:var(--ink);margin:0 0 10px;letter-spacing:.3px}
+  header.hero p.sub{font-size:1.15rem;color:var(--muted);max-width:760px;margin:0 auto}
+  .badge{display:inline-block;font-family:var(--mono);font-size:.8rem;letter-spacing:1px;
+    color:var(--accent);background:var(--chip);border:1px solid #C8D5CF;border-radius:20px;
+    padding:5px 14px;margin-bottom:18px}
+  section{margin:34px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    box-shadow:var(--shadow);padding:30px 32px}
+  h2{color:var(--ink);font-size:1.7rem;margin:0 0 6px}
+  h2 .num{color:var(--accent2);font-family:var(--mono);font-size:1.1rem;margin-right:10px}
+  h3{color:var(--accent);font-size:1.18rem;margin:22px 0 6px}
+  .lead{color:var(--muted);margin-top:0}
+  code,.mono{font-family:var(--mono);font-size:.92em;background:#F0F4F0;border-radius:6px;
+    padding:1px 6px;color:#36534A}
+  .grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+  .step{background:#fff;border:1px solid #E0E6E0;border-radius:16px;padding:16px 18px;position:relative}
+  .step b{color:var(--ink);display:block;font-size:1.02rem;margin-bottom:4px}
+  .step span.k{font-family:var(--mono);font-size:.8rem;color:var(--accent);
+    background:var(--chip);border-radius:8px;padding:2px 8px;position:absolute;top:14px;right:14px}
+  .step small{color:var(--muted);font-size:.86rem}
+  /* lab */
+  .lab{display:grid;grid-template-columns:minmax(360px,1.1fr) 1fr;gap:26px;align-items:start}
+  @media(max-width:880px){.lab{grid-template-columns:1fr}.grid6{grid-template-columns:1fr}}
+  canvas{width:100%;background:#FCFBF6;border:1px solid #E2E2D6;border-radius:16px;
+    touch-action:none;cursor:crosshair;display:block}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin:16px 0 6px;align-items:center}
+  .ctl{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+  .ctl label{font-weight:bold;color:var(--ink2);font-size:.82rem}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:7px 12px;font-family:var(--serif);font-size:.85rem;
+    cursor:pointer;color:var(--muted)}
+  .seg button.on{background:var(--accent);color:#fff}
+  input[type=range]{accent-color:var(--accent);width:150px}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;
+    font-family:var(--serif);cursor:pointer;color:var(--ink2);font-size:.88rem}
+  .btn:hover{background:var(--chip)}
+  .toggle{display:flex;align-items:center;gap:7px;font-size:.85rem;color:var(--ink2);cursor:pointer}
+  /* result panel */
+  .scorebox{background:#fff;border:1px solid #E0E6E0;border-radius:16px;padding:18px 20px;margin-bottom:14px}
+  .verdict{font-size:1.05rem;margin:0 0 14px}
+  .verdict b{font-size:1.5rem}
+  .bars{display:flex;flex-direction:column;gap:10px}
+  .barrow{display:grid;grid-template-columns:70px 1fr 64px;align-items:center;gap:10px;font-size:.9rem}
+  .bartrack{height:22px;background:#EFEFE7;border-radius:11px;overflow:hidden}
+  .barfill{height:100%;border-radius:11px;transition:width .25s ease}
+  .barfill.pos{background:linear-gradient(90deg,#2C7A68,#1D5A4E)}
+  .barfill.neg{background:linear-gradient(90deg,#D69A55,#C07A2B)}
+  .statline{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .pill{font-family:var(--mono);font-size:.78rem;background:var(--chip);border:1px solid #D2DCD6;
+    border-radius:8px;padding:4px 9px;color:#36534A}
+  table.calc{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:6px}
+  table.calc th,table.calc td{border-bottom:1px solid #ECECE2;padding:6px 8px;text-align:left}
+  table.calc th{color:var(--muted);font-weight:bold;font-size:.78rem}
+  table.calc td.mono{font-family:var(--mono);background:none}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:10px}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .note{background:#F8F1DE;border:1px solid #E3D3A2;border-radius:12px;padding:12px 16px;
+    font-size:.9rem;color:#5d5023;margin-top:14px}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:760px){.twocol{grid-template-columns:1fr}}
+  .circuit{font-family:var(--mono);font-size:.8rem;background:#FBFCFA;border:1px solid #E2E8E2;
+    border-radius:12px;padding:14px 16px;color:#36534A;overflow-x:auto;white-space:pre;line-height:1.5}
+  footer{padding:40px 22px 60px;text-align:center;color:var(--muted);font-size:.86rem}
+  a{color:var(--accent)}
+  .kbd{font-family:var(--mono);font-size:.8rem;border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:6px;padding:1px 6px;background:#fff}
+  .pos-c{color:var(--pos)} .neg-c{color:var(--neg)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="badge">TFM · ALGORITMO EB</div>
+  <h1>EB: clasificación cuántica a nivel de clase</h1>
+  <p class="sub">Una explicación <b>interactiva</b> del algoritmo propuesto en el TFM.
+  El laboratorio de abajo no es un dibujo: reimplementa en tu navegador el circuito real
+  <code>U_pair</code> (codificación angular RY + CNOT) y calcula fidelidades cuánticas de verdad.</p>
+</header>
+
+<div class="wrap">
+
+<!-- QUÉ ES -->
+<section class="card">
+  <h2>¿Qué es EB y por qué es distinto?</h2>
+  <p class="lead">La mayoría de clasificadores cuánticos (como QSVC) son <b>basados en instancias</b>:
+  comparan la muestra de test con muestras de entrenamiento <i>individuales</i>. EB cambia la unidad de
+  comparación: representa <b>cada clase entera</b> como un objeto geométrico en el espacio de Hilbert,
+  construido a partir de <b>pares</b> de muestras representativas, y compara el test contra esa estructura.</p>
+  <div class="twocol">
+    <div>
+      <h3>La idea en una frase</h3>
+      <p>Cada clase <code>y</code> se resume con <code>n_r</code> representantes. Con todos sus
+      <b>pares no ordenados</b> se construye un conjunto de estados cuánticos
+      <code>Ψ⁽ʸ⁾</code> — la "huella" de la clase. Para etiquetar un punto <code>x</code>, se le
+      empareja con cada representante y se mide cuánto se parece (fidelidad) a esa huella.</p>
+    </div>
+    <div>
+      <h3>El experimento clave del TFM</h3>
+      <p>La ablación con <b>CPC</b> (misma estructura por pares pero con similitud <i>clásica</i>)
+      demuestra que la ventaja viene de la <b>estructura a nivel de clase</b>, y no del circuito
+      entrelazante concreto. EB se sitúa entre QSVC (instancia, cuántico) y CPC (clase, clásico).</p>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section class="card">
+  <h2>El flujo completo, en 6 pasos</h2>
+  <p class="lead">Es exactamente lo que ocurre en el laboratorio interactivo de la sección siguiente.</p>
+  <div class="grid6">
+    <div class="step"><span class="k">1</span><b>Datos de entrada</b><small>Conjunto binario separado por clase. Cada punto se codificará en un estado cuántico.</small></div>
+    <div class="step"><span class="k">2</span><b>Selección de representantes</b><small><code>n_r</code> representantes por clase (medoides de k-means o aleatorios).</small></div>
+    <div class="step"><span class="k">3</span><b>Construcción de clase</b><small>Todos los pares no ordenados → <code>Ψ⁽ʸ⁾</code>, con <code>C(n_r,2)</code> estados.</small></div>
+    <div class="step"><span class="k">4</span><b>Estructura de test</b><small><code>x</code> se empareja con cada representante de cada clase → <code>Ψ_x⁽ʸ⁾</code> (<code>n_r</code> estados).</small></div>
+    <div class="step"><span class="k">5</span><b>Fidelidad + agregación</b><small>Fidelidades cuánticas test↔clase, agregadas por media / mediana / máximo.</small></div>
+    <div class="step"><span class="k">6</span><b>Decisión</b><small>Gana la clase con mayor puntuación: <code>ŷ = argmax S_y(x)</code>.</small></div>
+  </div>
+</section>
+
+<!-- LAB -->
+<section class="card">
+  <h2><span class="num">▶</span>Laboratorio interactivo</h2>
+  <p class="lead">Arrastra el punto de test <span style="color:#7a3">◆</span> por el plano. Cada
+  coordenada se codifica como un ángulo <code>RY</code> en <code>[0, π]</code>. Observa cómo cambian
+  las puntuaciones de clase y la predicción en tiempo real.</p>
+
+  <div class="lab">
+    <!-- left: canvas + controls -->
+    <div>
+      <canvas id="cv" width="720" height="560"></canvas>
+      <div class="legend">
+        <span><span class="dot" style="background:#C07A2B"></span>Clase −1</span>
+        <span><span class="dot" style="background:#1D5A4E"></span>Clase +1</span>
+        <span><span class="dot" style="background:#fff;border:2px solid #333"></span>Representante</span>
+        <span><span class="dot" style="background:#8a6d3b"></span>◆ Test (arrastrable)</span>
+      </div>
+
+      <div class="controls">
+        <div class="ctl">
+          <label>Representantes por clase: <span id="nrVal" class="mono">5</span></label>
+          <input type="range" id="nr" min="2" max="12" value="5" step="1">
+        </div>
+        <div class="ctl">
+          <label>Selección</label>
+          <div class="seg" id="segStrat">
+            <button data-v="kmeans" class="on">k-means</button>
+            <button data-v="random">aleatorio</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <label>Agregación 𝒜</label>
+          <div class="seg" id="segAgg">
+            <button data-v="mean" class="on">media</button>
+            <button data-v="median">mediana</button>
+            <button data-v="max">máximo</button>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="regen">↻ Regenerar datos</button>
+        <label class="toggle"><input type="checkbox" id="showPairs"> mostrar pares de clase</label>
+        <label class="toggle"><input type="checkbox" id="showTestLinks" checked> mostrar enlaces de test</label>
+      </div>
+      <div class="note">El circuito simulado usa <b>2 características → 4 cúbits</b> (2 por registro).
+      Con sólo RY y CNOT, el estado es <b>real</b>, así que la fidelidad
+      <code>|⟨ψ₁|ψ₂⟩|²</code> es el producto escalar al cuadrado. Es el mismo
+      <code>u_pair_tabular</code> del repositorio, evaluado exactamente.</div>
+    </div>
+
+    <!-- right: results -->
+    <div>
+      <div class="scorebox">
+        <p class="verdict">Predicción: <b id="pred">—</b></p>
+        <div class="bars">
+          <div class="barrow">
+            <span class="pos-c">S₊ (clase +1)</span>
+            <div class="bartrack"><div class="barfill pos" id="barPos" style="width:0%"></div></div>
+            <span class="mono" id="sPos">0.000</span>
+          </div>
+          <div class="barrow">
+            <span class="neg-c">S₋ (clase −1)</span>
+            <div class="bartrack"><div class="barfill neg" id="barNeg" style="width:0%"></div></div>
+            <span class="mono" id="sNeg">0.000</span>
+          </div>
+        </div>
+        <div class="statline" id="counts"></div>
+      </div>
+
+      <div class="scorebox">
+        <h3 style="margin-top:0">Desglose del cálculo (clase ganadora)</h3>
+        <p style="font-size:.88rem;color:var(--muted);margin:0 0 6px">
+        Fidelidad entre cada estado de test <code>|ψ_{x,r}⟩</code> y cada estado de clase
+        <code>|ψ⁽ʸ⁾_{i,j}⟩</code>. Se agregan los <span id="nFidWin" class="mono">·</span> valores.</p>
+        <table class="calc" id="calcTbl"><tbody></tbody></table>
+      </div>
+
+      <div class="scorebox">
+        <h3 style="margin-top:0">Circuito <code>U_pair(x, r)</code> evaluado</h3>
+        <div class="circuit" id="circuit"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ASIMETRÍA -->
+<section class="card">
+  <h2>La asimetría que mucha gente pasa por alto</h2>
+  <div class="twocol">
+    <div>
+      <h3>Lado de entrenamiento: PARES</h3>
+      <p>La huella de clase <code>Ψ⁽ʸ⁾</code> se construye con <b>todos los pares no ordenados</b>
+      de representantes. Por eso su tamaño crece como la combinatoria:</p>
+      <p style="text-align:center;font-size:1.1rem"><code>|Ψ⁽ʸ⁾| = C(n_r, 2) = n_r(n_r−1)/2</code></p>
+      <p>Con <code>n_r = 5</code> son 10 estados; con <code>n_r = 30</code>, <b>435</b> (¡no 30!, ni
+      30², ni 30·29!). Se construye una sola vez y queda fija.</p>
+    </div>
+    <div>
+      <h3>Lado de test: EMPAREJAMIENTOS SIMPLES</h3>
+      <p>Para etiquetar <code>x</code>, se le empareja con <b>cada</b> representante — un estado por
+      representante, <b>no</b> pares:</p>
+      <p style="text-align:center;font-size:1.1rem"><code>|Ψ_x⁽ʸ⁾| = n_r</code></p>
+      <p>El mismo <code>x</code> genera <b>dos</b> estructuras, <code>Ψ_x⁽⁺¹⁾</code> y
+      <code>Ψ_x⁽⁻¹⁾</code>, emparejándolo con los representantes <i>de cada clase</i>. Cada una se
+      compara sólo contra la huella de su propia clase.</p>
+    </div>
+  </div>
+  <div class="note">Los representantes con los que se empareja <code>x</code> son <b>siempre los de
+  entrenamiento</b> <code>R⁽ʸ⁾ ⊂ D_train</code>. De <code>D_test</code> sólo proviene el propio
+  <code>x</code>. La colección de fidelidades de una clase tiene
+  <code>n_r · C(n_r,2)</code> elementos.</div>
+</section>
+
+<!-- AGREGACIÓN -->
+<section class="card">
+  <h2>Tres lecturas del mismo conjunto de fidelidades</h2>
+  <p class="lead">El operador de agregación 𝒜 convierte el conjunto de fidelidades en una puntuación
+  escalar. Cambiarlo en el laboratorio modifica el carácter del clasificador:</p>
+  <div class="grid6" style="grid-template-columns:repeat(3,1fr)">
+    <div class="step"><b>EB-Mean</b><small>Media de las fidelidades. Evidencia <i>distribuida</i>: pide compatibilidad global con la clase.</small></div>
+    <div class="step"><b>EB-Median</b><small>Mediana. Centro <i>robusto</i>: resiste fidelidades atípicas (outliers).</small></div>
+    <div class="step"><b>EB-Max</b><small>Máximo. <i>Mejor coincidencia</i>: basta un par de clase muy afín al test.</small></div>
+  </div>
+</section>
+
+<!-- CUÁNTICO NATIVO -->
+<section class="card">
+  <h2>Cuando los datos ya son cuánticos</h2>
+  <p class="lead">Si la entrada es directamente un estado cuántico (salida de un algoritmo, sensor, o
+  estado fundamental de un hamiltoniano), EB se aplica <b>sin codificación</b>: <code>U_pair</code>
+  se reduce al producto tensorial <code>|ψ_a⟩⊗|ψ_b⟩</code> y la fidelidad
+  <code>|⟨ψ₁|ψ₂⟩|²</code> es la medida natural. Las <em>baselines</em> clásicas sólo ven probabilidades de
+  medida <code>|ψ|²</code> y descartan fase y entrelazamiento; EB, sobre las amplitudes completas,
+  conserva esa información. Es el régimen del experimento de Ising en el TFM.</p>
+</section>
+
+</div>
+
+<footer>
+  Reimplementación fiel en JavaScript de <code>u_pair_tabular</code> (RY + CNOT) y
+  <code>predict_eb</code> del repositorio del TFM. Estado de 4 cúbits simulado en el navegador.<br>
+  Generado como material didáctico del algoritmo EB.
+</footer>
+
+<script>
+/* ====================================================================
+   Simulador cuántico mínimo: estado real de nq cúbits (RY + CNOT).
+   Para el circuito tabular (sólo RY y CNOT) las amplitudes son reales.
+   ==================================================================== */
+const NQ = 4, DIM = 1<<NQ;            // 2 features/registro → 4 cúbits
+
+function applyRY(state, q, theta){
+  const c = Math.cos(theta/2), s = Math.sin(theta/2), step = 1<<q;
+  for(let base=0; base<DIM; base += step<<1){
+    for(let i=base; i<base+step; i++){
+      const i0=i, i1=i+step, a=state[i0], b=state[i1];
+      state[i0]=c*a - s*b;
+      state[i1]=s*a + c*b;
+    }
+  }
+}
+function applyCNOT(state, ctrl, tgt){
+  for(let i=0;i<DIM;i++){
+    if(((i>>ctrl)&1) && !((i>>tgt)&1)){
+      const j = i ^ (1<<tgt), tmp = state[i];
+      state[i]=state[j]; state[j]=tmp;
+    }
+  }
+}
+// U_pair(x, r): x=[f0,f1] en reg1 (q0,q1), r=[g0,g1] en reg2 (q2,q3); CNOT(0,2),(1,3)
+function uPair(x, r){
+  const st = new Float64Array(DIM); st[0]=1;
+  applyRY(st,0,x[0]); applyRY(st,1,x[1]);
+  applyRY(st,2,r[0]); applyRY(st,3,r[1]);
+  applyCNOT(st,0,2); applyCNOT(st,1,3);
+  return st;
+}
+function fidelity(a,b){ let d=0; for(let k=0;k<DIM;k++) d+=a[k]*b[k]; return d*d; }
+function aggregate(vals,mode){
+  if(mode==='mean')   return vals.reduce((s,v)=>s+v,0)/vals.length;
+  if(mode==='max')    return Math.max(...vals);
+  const s=[...vals].sort((p,q)=>p-q), m=s.length>>1;
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;       // median
+}
+function comb2(n){ return n*(n-1)/2; }
+
+/* ====================================================================
+   Datos sintéticos 2D en [0,π]², dos clases bimodales.
+   ==================================================================== */
+const PI = Math.PI;
+let rngState = 12345;
+function rnd(){ rngState = (rngState*1664525 + 1013904223) & 0x7fffffff; return rngState/0x7fffffff; }
+function gauss(mx,my,sd){ // Box-Muller
+  const u1=Math.max(rnd(),1e-9), u2=rnd();
+  const r=Math.sqrt(-2*Math.log(u1));
+  return [mx + sd*r*Math.cos(2*PI*u2), my + sd*r*Math.sin(2*PI*u2)];
+}
+function clampPi(p){ return [Math.min(Math.max(p[0],0.05),PI-0.05), Math.min(Math.max(p[1],0.05),PI-0.05)]; }
+
+let DATA = {pos:[], neg:[]};
+function generateData(){
+  const centers = {
+    neg:[[0.28*PI,0.32*PI],[0.40*PI,0.74*PI]],
+    pos:[[0.72*PI,0.66*PI],[0.82*PI,0.30*PI]]
+  };
+  const out={pos:[],neg:[]};
+  for(const cls of ['neg','pos']){
+    for(let i=0;i<44;i++){
+      const c=centers[cls][i%2];
+      out[cls].push(clampPi(gauss(c[0],c[1],0.11*PI)));
+    }
+  }
+  DATA=out;
+}
+
+/* ---- k-means (Lloyd) + medoide, replicando select_representatives ---- */
+function kmeansReps(points, k){
+  if(points.length<=k) return points.map(p=>p.slice());
+  // init: k puntos separados (k-means++ ligero)
+  let cents=[points[Math.floor(rnd()*points.length)].slice()];
+  while(cents.length<k){
+    let best=null,bd=-1;
+    for(const p of points){
+      let dmin=Infinity;
+      for(const c of cents) dmin=Math.min(dmin,(p[0]-c[0])**2+(p[1]-c[1])**2);
+      if(dmin>bd){bd=dmin;best=p;}
+    }
+    cents.push(best.slice());
+  }
+  let assign=new Array(points.length).fill(0);
+  for(let it=0;it<25;it++){
+    for(let i=0;i<points.length;i++){
+      let bj=0,bd=Infinity;
+      for(let j=0;j<k;j++){const d=(points[i][0]-cents[j][0])**2+(points[i][1]-cents[j][1])**2; if(d<bd){bd=d;bj=j;}}
+      assign[i]=bj;
+    }
+    const sum=Array.from({length:k},()=>[0,0,0]);
+    for(let i=0;i<points.length;i++){const j=assign[i];sum[j][0]+=points[i][0];sum[j][1]+=points[i][1];sum[j][2]++;}
+    for(let j=0;j<k;j++) if(sum[j][2]>0) cents[j]=[sum[j][0]/sum[j][2],sum[j][1]/sum[j][2]];
+  }
+  // medoide: punto más cercano al centro de su cluster
+  const reps=[];
+  for(let j=0;j<k;j++){
+    let best=null,bd=Infinity;
+    for(let i=0;i<points.length;i++){
+      if(assign[i]!==j) continue;
+      const d=(points[i][0]-cents[j][0])**2+(points[i][1]-cents[j][1])**2;
+      if(d<bd){bd=d;best=points[i];}
+    }
+    if(best) reps.push(best.slice());
+  }
+  return reps;
+}
+function randomReps(points,k){
+  const idx=[...points.keys()];
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return idx.slice(0,Math.min(k,points.length)).map(i=>points[i].slice());
+}
+
+/* ====================================================================
+   Estado de la app
+   ==================================================================== */
+const S = {nr:5, strat:'kmeans', agg:'mean', test:[0.5*PI,0.5*PI],
+          showPairs:false, showTestLinks:true, repsPos:[], repsNeg:[]};
+
+function selectReps(){
+  S.repsNeg = S.strat==='kmeans' ? kmeansReps(DATA.neg,S.nr) : randomReps(DATA.neg,S.nr);
+  S.repsPos = S.strat==='kmeans' ? kmeansReps(DATA.pos,S.nr) : randomReps(DATA.pos,S.nr);
+}
+
+/* ---- EB scoring para el punto de test actual ---- */
+function classStates(reps){
+  const states=[], pairs=[];
+  for(let i=0;i<reps.length;i++) for(let j=i+1;j<reps.length;j++){
+    states.push(uPair(reps[i],reps[j])); pairs.push([i,j]);
+  }
+  return {states,pairs};
+}
+function scoreClass(reps){
+  const {states,pairs}=classStates(reps);
+  const testStates=reps.map(r=>uPair(S.test,r));   // x ↔ cada representante
+  const fids=[]; const detail=[];
+  for(let t=0;t<testStates.length;t++)
+    for(let c=0;c<states.length;c++){
+      const f=fidelity(testStates[t],states[c]);
+      fids.push(f);
+      detail.push({r:t, pair:pairs[c], f});
+    }
+  return {S:aggregate(fids,S.agg), fids, detail, nPairs:states.length, nTest:testStates.length};
+}
+
+/* ====================================================================
+   Render
+   ==================================================================== */
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=cv.width, H=cv.height, PAD=36;
+function toPx(p){ return [PAD + p[0]/PI*(W-2*PAD), H-PAD - p[1]/PI*(H-2*PAD)]; }
+function toData(px,py){ return clampPi([ (px-PAD)/(W-2*PAD)*PI, (H-PAD-py)/(H-2*PAD)*PI ]); }
+
+let RES={pos:null,neg:null};
+function recompute(){
+  selectReps();
+  RES.pos=scoreClass(S.repsPos);
+  RES.neg=scoreClass(S.repsNeg);
+  draw();
+  updatePanel();
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // grid + ejes
+  ctx.strokeStyle='#ECE9DC'; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){
+    const t=g/4*PI, [x,]=toPx([t,0]), [,y]=toPx([0,t]);
+    ctx.beginPath();ctx.moveTo(x,PAD);ctx.lineTo(x,H-PAD);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(PAD,y);ctx.lineTo(W-PAD,y);ctx.stroke();
+  }
+  ctx.fillStyle='#9aa49d';ctx.font="12px Georgia";
+  ctx.fillText('RY(feature 0)  →  [0, π]', PAD, H-12);
+  ctx.save();ctx.translate(14,H-PAD);ctx.rotate(-PI/2);ctx.fillText('RY(feature 1)  →  [0, π]',0,0);ctx.restore();
+
+  // enlaces de test
+  if(S.showTestLinks){
+    const tp=toPx(S.test);
+    for(const [reps,col] of [[S.repsPos,'rgba(29,90,78,.30)'],[S.repsNeg,'rgba(192,122,43,.30)']]){
+      ctx.strokeStyle=col; ctx.lineWidth=1.3;
+      for(const r of reps){const rp=toPx(r);ctx.beginPath();ctx.moveTo(tp[0],tp[1]);ctx.lineTo(rp[0],rp[1]);ctx.stroke();}
+    }
+  }
+  // pares de clase
+  if(S.showPairs){
+    for(const [reps,col] of [[S.repsPos,'rgba(29,90,78,.22)'],[S.repsNeg,'rgba(192,122,43,.22)']]){
+      ctx.strokeStyle=col; ctx.lineWidth=1;
+      for(let i=0;i<reps.length;i++)for(let j=i+1;j<reps.length;j++){
+        const a=toPx(reps[i]),b=toPx(reps[j]);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+      }
+    }
+  }
+  // puntos
+  function pts(arr,color){ctx.fillStyle=color;for(const p of arr){const q=toPx(p);ctx.beginPath();ctx.arc(q[0],q[1],3.4,0,2*PI);ctx.fill();}}
+  pts(DATA.neg,'rgba(192,122,43,.55)');
+  pts(DATA.pos,'rgba(29,90,78,.55)');
+  // representantes
+  function reps(arr,ring){for(const p of arr){const q=toPx(p);
+    ctx.beginPath();ctx.arc(q[0],q[1],7,0,2*PI);ctx.fillStyle='#fff';ctx.fill();
+    ctx.lineWidth=2.6;ctx.strokeStyle=ring;ctx.stroke();}}
+  reps(S.repsNeg,'#C07A2B');
+  reps(S.repsPos,'#1D5A4E');
+  // test (rombo)
+  const tp=toPx(S.test);
+  ctx.save();ctx.translate(tp[0],tp[1]);ctx.rotate(PI/4);
+  ctx.fillStyle='#8a6d3b';ctx.strokeStyle='#3a2e15';ctx.lineWidth=2;
+  ctx.fillRect(-8,-8,16,16);ctx.strokeRect(-8,-8,16,16);ctx.restore();
+}
+
+function fmt(v){return v.toFixed(3);}
+function updatePanel(){
+  const sp=RES.pos.S, sn=RES.neg.S;
+  const pred = sp>=sn ? '+1' : '−1';
+  const pe=document.getElementById('pred');
+  pe.textContent = (sp>=sn?'Clase +1':'Clase −1');
+  pe.className = sp>=sn?'pos-c':'neg-c';
+  document.getElementById('sPos').textContent=fmt(sp);
+  document.getElementById('sNeg').textContent=fmt(sn);
+  const mx=Math.max(sp,sn,1e-9);
+  document.getElementById('barPos').style.width=(sp/mx*100)+'%';
+  document.getElementById('barNeg').style.width=(sn/mx*100)+'%';
+
+  const nP=comb2(S.nr), nT=S.nr;
+  document.getElementById('counts').innerHTML=
+    `<span class="pill">n_r = ${S.nr}</span>`+
+    `<span class="pill">|Ψ⁽ʸ⁾| = C(${S.nr},2) = ${nP}</span>`+
+    `<span class="pill">|Ψ_x⁽ʸ⁾| = ${nT}</span>`+
+    `<span class="pill">fidelidades/clase = ${nT*nP}</span>`+
+    `<span class="pill">𝒜 = ${S.agg}</span>`;
+
+  // desglose de la clase ganadora: top fidelidades
+  const win = sp>=sn ? RES.pos : RES.neg;
+  const winName = sp>=sn ? 'clase +1' : 'clase −1';
+  document.getElementById('nFidWin').textContent = win.detail.length+' ('+winName+')';
+  const top=[...win.detail].sort((a,b)=>b.f-a.f).slice(0,6);
+  let rows='<tr><th>x ↔ r</th><th>par de clase (i,j)</th><th>fidelidad</th></tr>';
+  for(const d of top)
+    rows+=`<tr><td class="mono">x↔r${d.r}</td><td class="mono">(${d.pair[0]},${d.pair[1]})</td><td class="mono">${d.f.toFixed(4)}</td></tr>`;
+  document.getElementById('calcTbl').innerHTML=rows;
+
+  // circuito U_pair(x, r0) para el representante más afín de la clase ganadora
+  const reps = sp>=sn ? S.repsPos : S.repsNeg;
+  drawCircuit(S.test, reps[0]||[0,0]);
+}
+
+function drawCircuit(x,r){
+  const f=v=>v.toFixed(2).padStart(5);
+  const txt=
+`registro x        registro r
+q0 ─ RY(${f(x[0])}) ─●──────   (x feat 0)
+                    │
+q1 ─ RY(${f(x[1])}) ─┼──●───   (x feat 1)
+                    │  │
+q2 ─ RY(${f(r[0])}) ─X──┼───   (r feat 0)
+                       │
+q3 ─ RY(${f(r[1])}) ────X───   (r feat 1)
+
+CNOT(q0→q2), CNOT(q1→q3)  →  |ψ_{x,r}⟩  (4 cúbits, 16 amplitudes)`;
+  document.getElementById('circuit').textContent=txt;
+}
+
+/* ====================================================================
+   Eventos
+   ==================================================================== */
+function bindSeg(id,key,after){
+  document.getElementById(id).addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    [...e.currentTarget.children].forEach(c=>c.classList.remove('on'));
+    b.classList.add('on'); S[key]=b.dataset.v; (after||recompute)();
+  });
+}
+bindSeg('segStrat','strat');
+bindSeg('segAgg','agg', ()=>{ // agg no cambia reps; recomputa scores rápido
+  RES.pos=scoreClass(S.repsPos); RES.neg=scoreClass(S.repsNeg); updatePanel();
+});
+document.getElementById('nr').addEventListener('input',e=>{
+  S.nr=+e.target.value; document.getElementById('nrVal').textContent=S.nr; recompute();
+});
+document.getElementById('regen').addEventListener('click',()=>{ rngState=(Date.now()&0x7fffffff)||7; generateData(); recompute(); });
+document.getElementById('showPairs').addEventListener('change',e=>{S.showPairs=e.target.checked;draw();});
+document.getElementById('showTestLinks').addEventListener('change',e=>{S.showTestLinks=e.target.checked;draw();});
+
+// arrastrar el punto de test
+let dragging=false;
+function pointerData(ev){
+  const rect=cv.getBoundingClientRect();
+  const px=(ev.clientX-rect.left)*(W/rect.width);
+  const py=(ev.clientY-rect.top)*(H/rect.height);
+  return toData(px,py);
+}
+function nearTest(ev){
+  const rect=cv.getBoundingClientRect();
+  const px=(ev.clientX-rect.left)*(W/rect.width), py=(ev.clientY-rect.top)*(H/rect.height);
+  const tp=toPx(S.test); return Math.hypot(px-tp[0],py-tp[1])<22;
+}
+cv.addEventListener('pointerdown',ev=>{ dragging=true; cv.setPointerCapture(ev.pointerId);
+  S.test=pointerData(ev); RES.pos=scoreClass(S.repsPos);RES.neg=scoreClass(S.repsNeg); draw();updatePanel(); });
+cv.addEventListener('pointermove',ev=>{ if(!dragging)return;
+  S.test=pointerData(ev); RES.pos=scoreClass(S.repsPos);RES.neg=scoreClass(S.repsNeg); draw();updatePanel(); });
+cv.addEventListener('pointerup',()=>dragging=false);
+cv.addEventListener('pointerleave',()=>dragging=false);
+
+/* init */
+generateData(); recompute();
+</script>
+</body>
+</html>
