@@ -123,11 +123,7 @@ transacciones para detección de fraude.
 > **Fraud Detection Transactions Dataset** — Samay Ashar, Kaggle.
 > <https://www.kaggle.com/datasets/samayashar/fraud-detection-transactions-dataset>
 
-Es un conjunto de datos **sintético**. Los derechos y la licencia del dataset
-pertenecen a su autor en Kaggle; consulta la página original para los términos de uso
-exactos. Se incluye aquí únicamente para facilitar la reproducción de los experimentos
-del TFM. **Si su licencia no permite la redistribución**, elimina el CSV del repositorio
-y, en su lugar, descárgalo desde Kaggle y colócalo en la raíz con ese mismo nombre.
+Es un conjunto de datos **sintético**. 
 
 ---
 
