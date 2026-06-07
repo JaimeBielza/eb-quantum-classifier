@@ -113,11 +113,21 @@ Qiskit hasta el último decimal.
 | Distinguido por entrelazamiento | intrínsecamente cuántico | generado por el código |
 
 Iris, Wine, cáncer de mama y *ad-hoc* se descargan/generan automáticamente. El único
-dato externo es **`synthetic_fraud_dataset.csv`** (incluido en el repositorio), un
-conjunto **semisintético** de transacciones para detección de fraude.
+dato externo es **`synthetic_fraud_dataset.csv`**, un conjunto **sintético** de
+transacciones para detección de fraude.
 
-> Si este CSV procede de una fuente de terceros (p. ej. Kaggle), añade aquí la
-> atribución y la licencia originales del dataset.
+### Atribución del dataset de fraude
+
+`synthetic_fraud_dataset.csv` procede de Kaggle:
+
+> **Fraud Detection Transactions Dataset** — Samay Ashar, Kaggle.
+> <https://www.kaggle.com/datasets/samayashar/fraud-detection-transactions-dataset>
+
+Es un conjunto de datos **sintético**. Los derechos y la licencia del dataset
+pertenecen a su autor en Kaggle; consulta la página original para los términos de uso
+exactos. Se incluye aquí únicamente para facilitar la reproducción de los experimentos
+del TFM. **Si su licencia no permite la redistribución**, elimina el CSV del repositorio
+y, en su lugar, descárgalo desde Kaggle y colócalo en la raíz con ese mismo nombre.
 
 ---
 
